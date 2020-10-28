@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="casia.isiteam.statistic.mapper.ItemMapper">
+
+    <select id="findItemById" resultType="casia.isiteam.statistic.pojo.Item">
+        <choose>
+            <when test="infoType == 1">
+                SELECT id, infoTitle, classifyParentName
+                FROM toutiao_info_ref
+                WHERE id = ${id}
+            </when>
+            <when test="infoType == 2">
+                SELECT wiki_info_id, `name`, classifyName
+                FROM wiki_info_ref
+                WHERE wiki_info_id = ${id}
+            </when>
+            <when test="infoType == 3">
+                SELECT auto_id, subjectName, category_ids
+                FROM subject_info
+                WHERE auto_id = ${id}
+            </when>
+            <when test="infoType == 4">
+                SELECT id, perName
+                FROM periodical
+                WHERE id = ${id}
+            </when>
+            <when test="infoType == 5">
+                SELECT id, reportName
+                FROM reportinfo
+                WHERE id = ${id}
+            </when>
+        </choose>
+    </select>
+
+</mapper>

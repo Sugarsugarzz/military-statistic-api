@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="casia.isiteam.statistic.mapper.UserRecordMapper">
+
+    <select id="findUserReadRecordByDate" resultType="casia.isiteam.statistic.pojo.UserRecord">
+        select info_type, ref_data_id, user_id, insert_time
+        from user_read_record
+        where insert_time &gt;= #{startTime} and insert_time &lt;= #{endTime}
+    </select>
+
+    <select id="findDataUpRecordByDate" resultType="casia.isiteam.statistic.pojo.UserRecord">
+        select info_type, ref_data_id, user_id, insert_time
+        from data_up_info
+        where insert_time &gt;= #{startTime} and insert_time &lt;= #{endTime} and status = 1
+    </select>
+
+    <select id="findUserCommentRecordByDate" resultType="casia.isiteam.statistic.pojo.UserRecord">
+        select info_type, ref_data_id, user_id, pubtime
+        from comment_info
+        where pubtime &gt;= #{startTime} and pubtime &lt;= #{endTime}
+    </select>
+
+</mapper>
