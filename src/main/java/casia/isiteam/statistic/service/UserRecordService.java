@@ -14,4 +14,6 @@ public interface UserRecordService {
     List<UserRecord> findUserCommentRecordByDate(Date startTime, Date endTime);
 
     List<UserRecord> findUserOperationRecordByDate(Date startTime, Date endTime);
+
+    List<UserRecord> findUserSearchRecordByDate(Date startTime, Date endTime);
 }

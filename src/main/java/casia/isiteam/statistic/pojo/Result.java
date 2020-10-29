@@ -15,9 +15,9 @@ public class Result implements Serializable {
 
     public Integer id;
     public Long rid;
-    @JSONField(format = "yyyy-MM-dd ")
+    @JSONField(format = "yyyy-MM-dd HH:mm:ss")
     public Date start_time;
-    @JSONField(format = "yyyy-MM-dd")
+    @JSONField(format = "yyyy-MM-dd HH:mm:ss")
     public Date end_time;
     public Object stat_most;
     public Object stat_usage;

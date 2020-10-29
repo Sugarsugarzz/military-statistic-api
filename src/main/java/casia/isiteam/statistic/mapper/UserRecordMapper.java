@@ -19,4 +19,6 @@ public interface UserRecordMapper {
     List<UserRecord> findUserCommentRecordByDate(@Param("startTime") Date startTime, @Param("endTime") Date endTime);
 
     List<UserRecord> findUserOperationRecordByDate(@Param("startTime") Date startTime, @Param("endTime") Date endTime);
+
+    List<UserRecord> findUserSearchRecordByDate(@Param("startTime") Date startTime, @Param("endTime") Date endTime);
 }

@@ -34,4 +34,9 @@ public class UserRecordServiceImpl implements UserRecordService {
     public List<UserRecord> findUserOperationRecordByDate(Date startTime, Date endTime) {
         return userRecordMapper.findUserOperationRecordByDate(startTime, endTime);
     }
+
+    @Override
+    public List<UserRecord> findUserSearchRecordByDate(Date startTime, Date endTime) {
+        return userRecordMapper.findUserSearchRecordByDate(startTime, endTime);
+    }
 }

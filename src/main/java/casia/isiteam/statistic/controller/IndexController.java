@@ -9,6 +9,7 @@ import casia.isiteam.statistic.service.UserRecordService;
 import casia.isiteam.statistic.util.Kit;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.scheduling.annotation.Async;
@@ -34,25 +35,25 @@ public class IndexController {
         Result result = new Result();
 
         // 1、统计最多阅读、点赞和评论的信息项
-        JSONObject statMost = statMost(startTime, endTime);
+//        JSONObject statMost = statMost(startTime, endTime);
         // 2、统计功能模块使用分布情况
-        JSONObject statUsage = statUsage(startTime, endTime);
+//        JSONObject statUsage = statUsage(startTime, endTime);
         // 3、统计用户访问类别分布情况
-        JSONObject statCategory = statCategory(startTime, endTime);
+//        JSONObject statCategory = statCategory(startTime, endTime);
         // 4、统计用户关注热点词云
-        JSONObject statHotspot = statHotspot(startTime, endTime);
+//        JSONObject statHotspot = statHotspot(startTime, endTime);
         // 5、统计用户需求热点
-        JSONObject statMiss = statMiss(startTime, endTime);
+//        JSONObject statMiss = statMiss(startTime, endTime);
 
         // 整合
         result.setRid(rid);
         result.setStart_time(startTime);
         result.setEnd_time(endTime);
-        result.setStat_most(statMost);
-        result.setStat_category(statCategory);
-        result.setStat_usage(statUsage);
-        result.setStat_hotspot(statHotspot);
-        result.setStat_miss(statMiss);
+//        result.setStat_most(statMost);
+//        result.setStat_category(statCategory);
+//        result.setStat_usage(statUsage);
+//        result.setStat_hotspot(statHotspot);
+//        result.setStat_miss(statMiss);
         return result;
     }
 
@@ -160,10 +161,37 @@ public class IndexController {
      * 利用未检索到记录，统计前30个，分词
      */
     private JSONObject statMiss(Date startTime, Date endTime) {
-
-
-        // 整合
         JSONObject obj = new JSONObject();
+
+        List<UserRecord> records = userRecordService.findUserSearchRecordByDate(startTime, endTime);
+        // 获取各类型下各词的搜索词频
+        Map<Long, Map<String, Integer>> map = new HashMap<>();
+        records.forEach(r -> {
+            long infoType = r.getInfo_type();
+            String searchContent = r.getSearch_content().replace(" ", "");
+            if (!map.containsKey(infoType)) {
+                map.put(infoType, new HashMap<>());
+            } else {
+                if (!map.get(infoType).containsKey(searchContent)) {
+                    map.get(infoType).put(searchContent, 1);
+                } else {
+                    map.get(infoType).put(searchContent, map.get(infoType).get(searchContent) + 1);
+                }
+            }
+        });
+//        System.out.println(map);
+        // 根据词频，对各类型下单词排序，找出前15个
+        map.keySet().forEach(k -> {
+            JSONObject subObj = new JSONObject();
+            List<Map.Entry<String, Integer>> list = new ArrayList<>(map.get(k).entrySet());
+            list.sort((o1, o2) -> o2.getValue() - o1.getValue());
+//            System.out.println(k + " - " +list);
+            int size = Math.min(list.size(), 30);
+            for (int i = 0; i < size; i++) {
+                subObj.put(list.get(i).getKey(), list.get(i).getValue());
+            }
+            obj.put(Kit.getSearchInfoTypeName(k.intValue()), subObj);
+        });
         return obj;
     }
 

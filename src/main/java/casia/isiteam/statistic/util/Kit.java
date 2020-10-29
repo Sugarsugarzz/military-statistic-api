@@ -26,4 +26,14 @@ public class Kit {
             default:  return "";
         }
     }
+
+    public static String getSearchInfoTypeName(int infoType) {
+        switch (infoType) {
+            case 0: return "综合搜索";
+            case 1: return "头条";
+            case 2: return "百科";
+            case 3: return "期刊";
+            default: return "";
+        }
+    }
 }

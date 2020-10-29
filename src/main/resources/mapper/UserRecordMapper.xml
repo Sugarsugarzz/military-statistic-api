@@ -27,4 +27,9 @@
         where oper_time &gt;= #{startTime} and oper_time &lt;= #{endTime}
     </select>
 
+    <select id="findUserSearchRecordByDate" resultType="casia.isiteam.statistic.pojo.UserRecord">
+        select info_type, search_content, user_id, insert_time
+        from user_search_history
+        where insert_time &gt;= #{startTime} and insert_time &lt;= #{endTime} and if_getResult = 0
+    </select>
 </mapper>
