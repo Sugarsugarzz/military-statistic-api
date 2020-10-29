@@ -19,9 +19,9 @@ public class Result implements Serializable {
     public Date start_time;
     @JSONField(format = "yyyy-MM-dd HH:mm:ss")
     public Date end_time;
-    public Object stat_most;
-    public Object stat_usage;
-    public Object stat_category;
-    public Object stat_hotspot;
-    public Object stat_miss;
+    public String stat_most;
+    public String stat_usage;
+    public String stat_category;
+    public String stat_hotspot;
+    public String stat_miss;
 }

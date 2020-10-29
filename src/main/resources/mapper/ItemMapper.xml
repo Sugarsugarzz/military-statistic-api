@@ -26,7 +26,7 @@
                 WHERE id = ${id}
             </when>
             <when test="infoType == 5">
-                SELECT auto_id, subjectName, category_ids
+                SELECT auto_id, subjectName
                 FROM subject_info
                 WHERE auto_id = ${id}
             </when>
@@ -72,7 +72,7 @@
                 </where>
             </when>
             <when test="infoType == 5">
-                SELECT auto_id, subjectName, category_ids
+                SELECT auto_id, subjectName
                 FROM subject_info
                 <where>
                     <foreach collection="ids" open="auto_id in (" close=")" item="id" separator=",">

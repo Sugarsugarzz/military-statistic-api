@@ -14,7 +14,7 @@ import org.ansj.domain.Term;
 import org.ansj.splitWord.analysis.ToAnalysis;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -31,17 +31,18 @@ public class IndexController {
     ResultService resultService;
 
 
-    @RequestMapping("/stat")
+    @PostMapping("/stat")
     public Result stat(@RequestParam("rid") Long rid,
-                       @RequestParam("startTime") @DateTimeFormat(pattern="yyyy-MM-dd") Date startTime,
-                       @RequestParam("endTime") @DateTimeFormat(pattern="yyyy-MM-dd") Date endTime) {
+                       @RequestParam("startTime") @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss") Date startTime,
+                       @RequestParam("endTime") @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss") Date endTime) {
         Result result = new Result();
 
         // 1、统计最多阅读、点赞和评论的信息项
         statMost(startTime, endTime, result);
         // 2、统计功能模块使用分布情况
         statUsage(startTime, endTime, result);
-        // 3、统计用户访问类别分布情况 4、统计用户关注热点词云
+        // 3、统计用户访问类别分布情况
+        // 4、统计用户关注热点词云
         statCategoryAndHotSpot(startTime, endTime, result);
         // 5、统计用户需求热点
         statMiss(startTime, endTime, result);
@@ -59,19 +60,13 @@ public class IndexController {
      * 一、最大阅读、点赞、评论信息项统计
      */
     private JSONObject statMost(Date startTime, Date endTime, Result result) {
-        // 统计最大阅读
-        JSONObject mostReadJSON = getMost(userRecordService.findUserReadRecordByDate(startTime, endTime));
-        // 统计最大点赞
-        JSONObject mostLikeJSON = getMost(userRecordService.findUserLikeRecordByDate(startTime, endTime));
-        // 统计最大评论
-        JSONObject mostCommentJSON = getMost(userRecordService.findUserCommentRecordByDate(startTime, endTime));
-        // 整合
-        JSONObject obj = new JSONObject();
-        obj.put("mostRead", mostReadJSON);
-        obj.put("mostLike", mostLikeJSON);
-        obj.put("mostComment", mostCommentJSON);
 
-        result.setStat_most(obj);
+        JSONObject obj = new JSONObject();
+        obj.put("mostRead", getMost(userRecordService.findUserReadRecordByDate(startTime, endTime)));
+        obj.put("mostLike", getMost(userRecordService.findUserLikeRecordByDate(startTime, endTime)));
+        obj.put("mostComment", getMost(userRecordService.findUserCommentRecordByDate(startTime, endTime)));
+
+        result.setStat_most(obj.toJSONString());
         return obj;
     }
 
@@ -80,6 +75,8 @@ public class IndexController {
      * @param records 用户行为记录
      */
     private JSONObject getMost(List<UserRecord> records) {
+        if (records.size() == 0)
+            return null;
         Map<String, Integer> map = new HashMap<>();
         records.forEach(r -> {
             String key = r.getInfo_type() + "-" + r.getRef_data_id();
@@ -104,7 +101,7 @@ public class IndexController {
         obj.put("infoType", Kit.getInfoTypeName(Integer.parseInt(key[0])));
         obj.put("title", title);
         obj.put("count", count);
-        System.out.println(Long.parseLong(key[0]) + " - " + title + " - " + count);
+//        System.out.println(Long.parseLong(key[0]) + " - " + title + " - " + count);
         return obj;
     }
 
@@ -127,19 +124,19 @@ public class IndexController {
             })
         );
 //        System.out.println(map);
-        // 整合
+
         JSONObject obj = new JSONObject();
         map.keySet().forEach(k -> obj.put(k, map.get(k)));
 
-        result.setStat_usage(obj);
+        result.setStat_usage(obj.toJSONString());
         return obj;
     }
 
     /**
      * 三、用户信息项访问类别分布情况
-     * 百科（为主）、头条、期刊、报告，每个信息类型下统计前15个类别
+     *   百科（为主）、头条、期刊、报告，每个信息类型下统计前15个类别
      * 四、用户关注热点词云
-     * 百科、头条、期刊、报告，每个信息类型下统计前30个热词，分词
+     *   百科、头条、期刊、报告，每个信息类型下统计前30个热词，分词
      */
     private JSONObject statCategoryAndHotSpot(Date startTime, Date endTime, Result result) {
         JSONObject categoryObj = new JSONObject();
@@ -152,11 +149,10 @@ public class IndexController {
             long infoType = r.getInfo_type();
             if (!map.containsKey(infoType)) {
                 map.put(infoType, new HashSet<>());
-            } else {
-                map.get(infoType).add(r.getRef_data_id());
             }
+            map.get(infoType).add(r.getRef_data_id());
         });
-        System.out.println(map);
+//        System.out.println(map);
         // 根据信息项id集合，获取对应信息项，统计类别和关键词的频次
         map.keySet().forEach(k -> {
             JSONObject categorySubObj = new JSONObject();
@@ -165,7 +161,7 @@ public class IndexController {
             Map<String, Integer> hotspotCountMap = new HashMap<>();
             List<Item> items = itemService.findItemsByIds(k, map.get(k));
             // 统计类别和关键词频次
-            System.out.println(items);
+//            System.out.println(items);
             items.forEach(item -> {
 
                 // 只有 头条和百科 有类别，统计类别频次
@@ -200,7 +196,7 @@ public class IndexController {
             // 类别：将前十五加入结果
             List<Map.Entry<String, Integer>> categoryCountList = new ArrayList<>(categoryCountMap.entrySet());
             categoryCountList.sort((o1, o2) -> o2.getValue() - o1.getValue());
-            System.out.println(categoryCountList);
+//            System.out.println(categoryCountList);
             int size = Math.min(categoryCountList.size(), 15);
             for (int i = 0; i < size; i++) {
                 categorySubObj.put(categoryCountList.get(i).getKey(), categoryCountList.get(i).getValue());
@@ -212,7 +208,7 @@ public class IndexController {
             // 热词：将前三十加入结果
             List<Map.Entry<String, Integer>> hotspotCountList = new ArrayList<>(hotspotCountMap.entrySet());
             hotspotCountList.sort((o1, o2) -> o2.getValue() - o1.getValue());
-            System.out.println(hotspotCountList);
+//            System.out.println(hotspotCountList);
             size = Math.min(hotspotCountList.size(), 30);
             for (int i = 0; i < size; i++) {
                 hotspotSubObj.put(hotspotCountList.get(i).getKey(), hotspotCountList.get(i).getValue());
@@ -226,14 +222,14 @@ public class IndexController {
         obj.put("statCategory", categoryObj);
         obj.put("statHotspot", hotspotObj);
 
-        result.setStat_category(categoryObj);
-        result.setStat_hotspot(hotspotObj);
+        result.setStat_category(categoryObj.toJSONString());
+        result.setStat_hotspot(hotspotObj.toJSONString());
         return obj;
     }
 
     /**
      * 五、用户需求热点词云
-     * 利用未检索到记录，统计前30个，分词
+     *   利用未检索到记录，统计前30个，分词
      */
     private JSONObject statMiss(Date startTime, Date endTime, Result result) {
         JSONObject obj = new JSONObject();
@@ -244,18 +240,18 @@ public class IndexController {
         records.forEach(r -> {
             long infoType = r.getInfo_type();
             String searchContent = r.getSearch_content().replace(" ", "");
-            if (!map.containsKey(infoType)) {
+            if (!map.containsKey(infoType))
                 map.put(infoType, new HashMap<>());
+
+            if (!map.get(infoType).containsKey(searchContent)) {
+                map.get(infoType).put(searchContent, 1);
             } else {
-                if (!map.get(infoType).containsKey(searchContent)) {
-                    map.get(infoType).put(searchContent, 1);
-                } else {
-                    map.get(infoType).put(searchContent, map.get(infoType).get(searchContent) + 1);
-                }
+                map.get(infoType).put(searchContent, map.get(infoType).get(searchContent) + 1);
             }
+
         });
 //        System.out.println(map);
-        // 根据词频，对各类型下单词排序，找出前15个
+        // 根据词频，对各类型下单词排序，找出前30个
         map.keySet().forEach(k -> {
             JSONObject subObj = new JSONObject();
             List<Map.Entry<String, Integer>> list = new ArrayList<>(map.get(k).entrySet());
@@ -268,9 +264,7 @@ public class IndexController {
             obj.put(Kit.getSearchInfoTypeName(k.intValue()), subObj);
         });
 
-        result.setStat_miss(obj);
+        result.setStat_miss(obj.toJSONString());
         return obj;
     }
-
-
 }
