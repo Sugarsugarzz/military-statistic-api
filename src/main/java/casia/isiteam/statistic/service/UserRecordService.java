@@ -9,8 +9,9 @@ public interface UserRecordService {
 
     List<UserRecord> findUserReadRecordByDate(Date startTime, Date endTime);
 
-    List<UserRecord> findDataUpRecordByDate(Date startTime, Date endTime);
+    List<UserRecord> findUserLikeRecordByDate(Date startTime, Date endTime);
 
     List<UserRecord> findUserCommentRecordByDate(Date startTime, Date endTime);
 
+    List<UserRecord> findUserOperationRecordByDate(Date startTime, Date endTime);
 }

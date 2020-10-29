@@ -4,7 +4,7 @@ import casia.isiteam.statistic.pojo.Item;
 
 public class Kit {
 
-    public static String getItemTitle(Item item, int infoType) {
+    public static String getItemTitle(int infoType, Item item) {
         if (item == null)  return "";
         switch (infoType) {
             case 1:  return item.getInfoTitle();

@@ -15,6 +15,8 @@ public class UserRecord implements Serializable{
     public Long info_type;
     public Long ref_data_id;
     public String user_id;
+    public String operation;
     public Date insert_time;
     public Date pubtime;
+    public Date oper_time;
 }

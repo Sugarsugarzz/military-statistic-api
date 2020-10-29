@@ -9,7 +9,7 @@
         where insert_time &gt;= #{startTime} and insert_time &lt;= #{endTime}
     </select>
 
-    <select id="findDataUpRecordByDate" resultType="casia.isiteam.statistic.pojo.UserRecord">
+    <select id="findUserLikeRecordByDate" resultType="casia.isiteam.statistic.pojo.UserRecord">
         select info_type, ref_data_id, user_id, insert_time
         from data_up_info
         where insert_time &gt;= #{startTime} and insert_time &lt;= #{endTime} and status = 1
@@ -19,6 +19,12 @@
         select info_type, ref_data_id, user_id, pubtime
         from comment_info
         where pubtime &gt;= #{startTime} and pubtime &lt;= #{endTime}
+    </select>
+
+    <select id="findUserOperationRecordByDate" resultType="casia.isiteam.statistic.pojo.UserRecord">
+        select user_id, operation, oper_time
+        from user_operate_info
+        where oper_time &gt;= #{startTime} and oper_time &lt;= #{endTime}
     </select>
 
 </mapper>

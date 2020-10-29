@@ -14,7 +14,9 @@ public interface UserRecordMapper {
 
     List<UserRecord> findUserReadRecordByDate(@Param("startTime") Date startTime, @Param("endTime") Date endTime);
 
-    List<UserRecord> findDataUpRecordByDate(@Param("startTime") Date startTime, @Param("endTime") Date endTime);
+    List<UserRecord> findUserLikeRecordByDate(@Param("startTime") Date startTime, @Param("endTime") Date endTime);
 
     List<UserRecord> findUserCommentRecordByDate(@Param("startTime") Date startTime, @Param("endTime") Date endTime);
+
+    List<UserRecord> findUserOperationRecordByDate(@Param("startTime") Date startTime, @Param("endTime") Date endTime);
 }

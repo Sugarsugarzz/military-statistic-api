@@ -21,12 +21,17 @@ public class UserRecordServiceImpl implements UserRecordService {
     }
 
     @Override
-    public List<UserRecord> findDataUpRecordByDate(Date startTime, Date endTime) {
-        return userRecordMapper.findDataUpRecordByDate(startTime, endTime);
+    public List<UserRecord> findUserLikeRecordByDate(Date startTime, Date endTime) {
+        return userRecordMapper.findUserLikeRecordByDate(startTime, endTime);
     }
 
     @Override
     public List<UserRecord> findUserCommentRecordByDate(Date startTime, Date endTime) {
         return userRecordMapper.findUserCommentRecordByDate(startTime, endTime);
+    }
+
+    @Override
+    public List<UserRecord> findUserOperationRecordByDate(Date startTime, Date endTime) {
+        return userRecordMapper.findUserOperationRecordByDate(startTime, endTime);
     }
 }
