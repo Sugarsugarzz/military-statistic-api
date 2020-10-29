@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="casia.isiteam.statistic.mapper.ResultMapper">
+
+    <insert id="saveResult" parameterType="casia.isiteam.statistic.pojo.Result">
+        insert into user_info_statistic(rid, start_time, end_time, stat_most, stat_usage, stat_category, stat_hotspot, stat_miss)
+        values (#{rid}, #{start_time}, #{end_time}, #{stat_most}, #{stat_usage}, #{stat_category}, #{stat_hotspot}, #{stat_miss})
+    </insert>
+
+</mapper>

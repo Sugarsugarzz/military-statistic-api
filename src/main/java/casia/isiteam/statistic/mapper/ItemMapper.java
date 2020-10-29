@@ -5,7 +5,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
-import java.util.Date;
+import java.util.Collection;
 import java.util.List;
 
 @Mapper
@@ -13,4 +13,6 @@ import java.util.List;
 public interface ItemMapper {
 
     Item findItemById(@Param("infoType") Long infoType, @Param("id") Long id);
+
+    List<Item> findItemsByIds(@Param("infoType") Long infoType, @Param("ids") Collection<Long> ids);
 }

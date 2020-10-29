@@ -9,9 +9,9 @@ public class Kit {
         switch (infoType) {
             case 1:  return item.getInfoTitle();
             case 2:  return item.getName();
-            case 3:  return item.getSubjectName();
-            case 4:  return item.getPerName();
-            case 5:  return item.getReportName();
+            case 3:  return item.getPerName();
+            case 4:  return item.getReportName();
+            case 5:  return item.getSubjectName();
             default:  return "";
         }
     }

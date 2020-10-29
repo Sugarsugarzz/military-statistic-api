@@ -6,7 +6,7 @@
     <select id="findItemById" resultType="casia.isiteam.statistic.pojo.Item">
         <choose>
             <when test="infoType == 1">
-                SELECT id, infoTitle, classifyParentName
+                SELECT id, infoTitle, classifyName
                 FROM toutiao_info_ref
                 WHERE id = ${id}
             </when>
@@ -16,19 +16,69 @@
                 WHERE wiki_info_id = ${id}
             </when>
             <when test="infoType == 3">
-                SELECT auto_id, subjectName, category_ids
-                FROM subject_info
-                WHERE auto_id = ${id}
-            </when>
-            <when test="infoType == 4">
                 SELECT id, perName
                 FROM periodical
                 WHERE id = ${id}
             </when>
-            <when test="infoType == 5">
+            <when test="infoType == 4">
                 SELECT id, reportName
                 FROM reportinfo
                 WHERE id = ${id}
+            </when>
+            <when test="infoType == 5">
+                SELECT auto_id, subjectName, category_ids
+                FROM subject_info
+                WHERE auto_id = ${id}
+            </when>
+        </choose>
+    </select>
+
+    <select id="findItemsByIds" resultType="casia.isiteam.statistic.pojo.Item">
+        <choose>
+            <when test="infoType == 1">
+                SELECT id, infoTitle, classifyName
+                FROM toutiao_info_ref
+                <where>
+                    <foreach collection="ids" open="id in (" close=")" item="id" separator=",">
+                        ${id}
+                    </foreach>
+                </where>
+            </when>
+            <when test="infoType == 2">
+                SELECT wiki_info_id, `name`, classifyName
+                FROM wiki_info_ref
+                <where>
+                    <foreach collection="ids" open="wiki_info_id in (" close=")" item="id" separator=",">
+                        ${id}
+                    </foreach>
+                </where>
+            </when>
+            <when test="infoType == 3">
+                SELECT id, perName
+                FROM periodical
+                <where>
+                    <foreach collection="ids" open="id in (" close=")" item="id" separator=",">
+                        ${id}
+                    </foreach>
+                </where>
+            </when>
+            <when test="infoType == 4">
+                SELECT id, reportName
+                FROM reportinfo
+                <where>
+                    <foreach collection="ids" open="id in (" close=")" item="id" separator=",">
+                        ${id}
+                    </foreach>
+                </where>
+            </when>
+            <when test="infoType == 5">
+                SELECT auto_id, subjectName, category_ids
+                FROM subject_info
+                <where>
+                    <foreach collection="ids" open="auto_id in (" close=")" item="id" separator=",">
+                        ${id}
+                    </foreach>
+                </where>
             </when>
         </choose>
     </select>
