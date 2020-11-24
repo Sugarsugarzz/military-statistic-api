@@ -10,6 +10,8 @@ import casia.isiteam.statistic.service.UserRecordService;
 import casia.isiteam.statistic.util.Kit;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import org.ansj.app.keyword.KeyWordComputer;
+import org.ansj.app.keyword.Keyword;
 import org.ansj.domain.Term;
 import org.ansj.splitWord.analysis.ToAnalysis;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +31,8 @@ public class IndexController {
     ItemService itemService;
     @Autowired
     ResultService resultService;
-
+    // 需要处理的info_type，用来过滤掉不需要处理的info_type
+    List<Long> processInfoTypeList = Arrays.asList(1L, 2L, 3L, 4L, 5L);
 
     @PostMapping("/stat")
     public Result stat(@RequestParam("rid") Long rid,
@@ -78,14 +81,15 @@ public class IndexController {
         if (records.size() == 0)
             return null;
         Map<String, Integer> map = new HashMap<>();
-        records.forEach(r -> {
+        for (UserRecord r : records) {
+            if (!processInfoTypeList.contains(r.getInfo_type())) continue;  // 过滤掉不需要处理的info_type
             String key = r.getInfo_type() + "-" + r.getRef_data_id();
             if (!map.containsKey(key)) {
                 map.put(key, 1);
             } else {
                 map.put(key, map.get(key) + 1);
             }
-        });
+        }
         List<Map.Entry<String, Integer>> list = new ArrayList<>(map.entrySet());
         list.sort((o1, o2) -> (o2.getValue() - o1.getValue()));
         String[] key = list.get(0).getKey().split("-");  // infoType, id
@@ -94,10 +98,10 @@ public class IndexController {
         if (item == null)  count = 0;
 
         String title = Kit.getItemTitle(Integer.parseInt(key[0]), item);
-
 //        System.out.println(list);
         // 整合
         JSONObject obj = new JSONObject();
+        obj.put("id", Long.parseLong(key[1]));
         obj.put("infoType", Kit.getInfoTypeName(Integer.parseInt(key[0])));
         obj.put("title", title);
         obj.put("count", count);
@@ -145,13 +149,14 @@ public class IndexController {
         List<UserRecord> records = userRecordService.findUserReadRecordByDate(startTime, endTime);
         // 获取各信息类型下的所有信息项id
         Map<Long, Set<Long>> map = new HashMap<>();
-        records.forEach(r -> {
+        for (UserRecord r : records) {
+            if (!processInfoTypeList.contains(r.getInfo_type())) continue;
             long infoType = r.getInfo_type();
             if (!map.containsKey(infoType)) {
                 map.put(infoType, new HashSet<>());
             }
             map.get(infoType).add(r.getRef_data_id());
-        });
+        }
 //        System.out.println(map);
         // 根据信息项id集合，获取对应信息项，统计类别和关键词的频次
         map.keySet().forEach(k -> {
@@ -180,9 +185,10 @@ public class IndexController {
 
                 // 提取热词，统计频次
                 String title = Kit.getItemTitle(k.intValue(), item);
-                List<Term> terms = ToAnalysis.parse(title).getTerms();
-                terms.forEach(term -> {
-                    String word = term.getName();
+                // 关键词提取方式
+                Collection<Keyword> keywords = new KeyWordComputer<>(5).computeArticleTfidf(title);
+                keywords.forEach(keyword -> {
+                    String word = keyword.getName();
                     if (word.length() > 1 && word.replaceAll("[^a-zA-Z\\u4E00-\\u9FA5]", "").trim().length() != 0) {
                         if (!hotspotCountMap.containsKey(word)) {
                             hotspotCountMap.put(word, 1);
@@ -191,6 +197,18 @@ public class IndexController {
                         }
                     }
                 });
+                // 分词方式（弃）
+//                List<Term> terms = ToAnalysis.parse(title).getTerms();
+//                terms.forEach(term -> {
+//                    String word = term.getName();
+//                    if (word.length() > 1 && word.replaceAll("[^a-zA-Z\\u4E00-\\u9FA5]", "").trim().length() != 0) {
+//                        if (!hotspotCountMap.containsKey(word)) {
+//                            hotspotCountMap.put(word, 1);
+//                        } else {
+//                            hotspotCountMap.put(word, hotspotCountMap.get(word) + 1);
+//                        }
+//                    }
+//                });
             });
 
             // 类别：将前十五加入结果

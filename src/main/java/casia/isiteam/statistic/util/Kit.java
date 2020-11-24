@@ -32,7 +32,10 @@ public class Kit {
             case 0: return "综合搜索";
             case 1: return "头条";
             case 2: return "百科";
-            case 3: return "期刊";
+            case 3: return "信息产品";
+            case 4: return "期刊";
+            case 5: return "报告";
+            case 6: return "专题";
             default: return "";
         }
     }
